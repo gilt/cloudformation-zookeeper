@@ -8,8 +8,8 @@
     "InstanceType" : {
       "Description" : "EC2 instance type",
       "Type" : "String",
-      "Default" : "m1.small",
-      "AllowedValues" : [ "t1.micro","m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge","m3.xlarge","m3.2xlarge","c1.medium","c1.xlarge","cc1.4xlarge","cc2.8xlarge","cg1.4xlarge"],
+      "Default" : "t2.small",
+      "AllowedValues" : [ "t1.micro", "t2.small", "m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge", "m3.medium" ,"m3.xlarge","m3.2xlarge","c1.medium","c1.xlarge","cc1.4xlarge","cc2.8xlarge","cg1.4xlarge"],
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
     "KeyName" : {
@@ -156,7 +156,7 @@
         "KeyName" : { "Ref" : "KeyName" },
         "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI"] },
         "SecurityGroups" : [ { "Ref" : "ServerSecurityGroup" }, { "Ref" : "AdminSecurityGroup" }  ],
-        "AssociatePublicIpAddress": "true",
+        "AssociatePublicIpAddress": "false",
         "InstanceType" : { "Ref" : "InstanceType" },
         "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
           "#!/bin/bash -ex\n",
@@ -177,7 +177,7 @@
           "   -e 'AWS_ACCESS_KEY_ID=", { "Ref" : "HostKeys" }, "'",
           "   -e 'AWS_SECRET_ACCESS_KEY=", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]}, "'",
           "   -e 'AWS_REGION=", { "Ref" : "ExhibitorS3Region" }, "'",
-          "   -e \"HOSTNAME=`ec2metadata --public-hostname`\"",
+          "   -e \"HOSTNAME=`ec2metadata --local-ipv4`\"",
           "   ", { "Ref": "DockerImage" }, "\n",
           "runit-service enable zk\n",
 
